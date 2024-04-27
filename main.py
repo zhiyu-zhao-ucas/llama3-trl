@@ -108,4 +108,6 @@ trainer = DPOTrainer(
     eval_dataset=dataset["test"],
 )
 trainer.train()
+
+# Save model
 trainer.save_model(SAVE_DIR)
