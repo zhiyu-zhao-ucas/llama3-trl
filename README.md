@@ -1,5 +1,6 @@
 # Llama DPO
-The project trains Meta-Llama-3-8B with DPO using 
+The project trains Meta-Llama-3-8B with DPO using TRL.
+
 Build Dockerfile
 ```shell
 docker build -t zhiyu/trl .
