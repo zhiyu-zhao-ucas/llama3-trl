@@ -1,0 +1,25 @@
+Special tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.
+
+
+
+
+Loading checkpoint shards: 100%|██████████| 4/4 [00:08<00:00,  2.10s/it]
+Map:   0%|          | 0/100 [00:00<?, ? examples/s]/home/zhiyu/anaconda3/envs/trl/lib/python3.10/site-packages/transformers/tokenization_utils_base.py:2692: UserWarning: `max_length` is ignored when `padding`=`True` and there is no truncation strategy. To pad to max length, use `padding='max_length'`.
+  warnings.warn(
+Map: 100%|██████████| 100/100 [00:00<00:00, 1208.71 examples/s]
+Map: 100%|██████████| 100/100 [00:00<00:00, 1200.32 examples/s]
+Map:   0%|          | 0/100 [00:00<?, ? examples/s]
+Map:   0%|          | 0/100 [00:00<?, ? examples/s]/home/zhiyu/anaconda3/envs/trl/lib/python3.10/site-packages/transformers/tokenization_utils_base.py:2692: UserWarning: `max_length` is ignored when `padding`=`True` and there is no truncation strategy. To pad to max length, use `padding='max_length'`.
+  warnings.warn(
+Map: 100%|██████████| 100/100 [00:00<00:00, 1221.75 examples/s]
+Map:   0%|          | 0/100 [00:00<?, ? examples/s]/home/zhiyu/anaconda3/envs/trl/lib/python3.10/site-packages/transformers/tokenization_utils_base.py:2692: UserWarning: `max_length` is ignored when `padding`=`True` and there is no truncation strategy. To pad to max length, use `padding='max_length'`.
+  warnings.warn(
+Map: 100%|██████████| 100/100 [00:00<00:00, 1580.92 examples/s]
+
+Map: 100%|██████████| 100/100 [00:00<00:00, 474.58 examples/s]
+Map: 100%|██████████| 100/100 [00:00<00:00, 1309.50 examples/s]
+Map: 100%|██████████| 100/100 [00:00<00:00, 1272.46 examples/s]
+Map: 100%|██████████| 100/100 [00:00<00:00, 694.48 examples/s]
+Map: 100%|██████████| 100/100 [00:00<00:00, 697.05 examples/s]
+Map: 100%|██████████| 100/100 [00:00<00:00, 677.84 examples/s]
+Map: 100%|██████████| 100/100 [00:01<00:00, 78.10 examples/s]

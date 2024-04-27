@@ -11,12 +11,14 @@ from transformers import (
     AutoModelForCausalLM,
     BitsAndBytesConfig,
 )
-from trl import DPOTrainer
+from trl import DPOTrainer, DPOConfig, setup_chat_format
+
 
 # Constants
-BASE_MODEL = "/home/zhiyu/code/llm/model/Meta-Llama-3-8B"
-DATASET_NAME = "/mnt/nasdata/yongcheng/projects/research/DPO/direct-preference-optimization/.cache/root/Anthropic___hh-rlhf"
+BASE_MODEL = "/workspace/model"
+DATASET_NAME = "/workspace/data"
 OUTPUT_DIR = "./results/"
+SAVE_DIR = "./trained_model/"
 
 # Load tokenizer and model
 tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL)
@@ -35,10 +37,16 @@ model = AutoModelForCausalLM.from_pretrained(
     device_map="auto",
     attn_implementation=attn_implementation,
 )
-tokenizer.pad_token = tokenizer.eos_token
+MAX_LENGTH = 1024
+MAX_PROMPT_LENGTH = 512
+
+
+model, tokenizer = setup_chat_format(model, tokenizer)
 
 # Load dataset
 dataset = load_from_disk(DATASET_NAME)
+dataset['train'] = dataset['train'].select(range(100))
+dataset['test'] = dataset['test'].select(range(100))
 
 # Define functions
 def extract_anthropic_prompt(prompt_and_response):
@@ -48,7 +56,7 @@ def extract_anthropic_prompt(prompt_and_response):
     assert search_term_idx != -1, f"Prompt and response does not contain '{search_term}'"
     return prompt_and_response[:search_term_idx + len(search_term)]
 
-def split_prompt_and_responses(ex):
+def split_prompt_and_responses(ex, tokenizer=tokenizer):
     prompt = extract_anthropic_prompt(ex['chosen'])
     chosen_response = ex['chosen'][len(prompt):]
     rejected_response = ex['rejected'][len(prompt):]
@@ -70,21 +78,24 @@ model.add_adapter(peft_config)
 model = prepare_model_for_kbit_training(model)
 
 # Configure training
-dpo_args = TrainingArguments(
+dpo_args = DPOConfig(
     learning_rate=1e-5,
     lr_scheduler_type="cosine",
     warmup_steps=10,
-    evaluation_strategy="steps",
-    per_device_train_batch_size=1,
-    per_device_eval_batch_size=1,
+    eval_strategy="steps",
+    logging_strategy="steps",
+    per_device_train_batch_size=4,
+    per_device_eval_batch_size=4,
     num_train_epochs=1,
     logging_steps=1,
     report_to="wandb",
     output_dir=OUTPUT_DIR,
     remove_unused_columns=False,
+    max_length = 1024,
+    max_prompt_length = 512,
+    optim="paged_adamw_32bit",
 )
-dpo_args.max_length = 1024
-dpo_args.max_prompts_length = 512
+
 
 # Train model
 trainer = DPOTrainer(
@@ -93,6 +104,6 @@ trainer = DPOTrainer(
     args=dpo_args,
     train_dataset=dataset["test"],
     eval_dataset=dataset["test"],
-    data_collator=default_data_collator,
 )
 trainer.train()
+trainer.save_model(SAVE_DIR)

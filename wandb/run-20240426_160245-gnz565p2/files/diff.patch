@@ -1,0 +1,34 @@
+diff --git a/main.py b/main.py
+index 8c24166..1502ffd 100644
+--- a/main.py
++++ b/main.py
+@@ -17,6 +17,7 @@ from trl import DPOTrainer
+ BASE_MODEL = "/home/zhiyu/code/llm/model/Meta-Llama-3-8B"
+ DATASET_NAME = "/mnt/nasdata/yongcheng/projects/research/DPO/direct-preference-optimization/.cache/root/Anthropic___hh-rlhf"
+ OUTPUT_DIR = "./results/"
++SAVE_DIR = "./trained_model/"
+ 
+ # Load tokenizer and model
+ tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL)
+@@ -75,6 +76,7 @@ dpo_args = TrainingArguments(
+     lr_scheduler_type="cosine",
+     warmup_steps=10,
+     evaluation_strategy="steps",
++    logging_strategy="steps",
+     per_device_train_batch_size=1,
+     per_device_eval_batch_size=1,
+     num_train_epochs=1,
+@@ -91,8 +93,9 @@ trainer = DPOTrainer(
+     model=model,
+     tokenizer=tokenizer,
+     args=dpo_args,
+-    train_dataset=dataset["test"],
++    train_dataset=dataset["train"],
+     eval_dataset=dataset["test"],
+     data_collator=default_data_collator,
+ )
+-trainer.train()
+\ No newline at end of file
++trainer.train()
++trainer.save_model(SAVE_DIR)
+\ No newline at end of file

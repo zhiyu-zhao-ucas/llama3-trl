@@ -1,0 +1,54 @@
+diff --git a/main.py b/main.py
+index 8c24166..169015d 100644
+--- a/main.py
++++ b/main.py
+@@ -11,12 +11,13 @@ from transformers import (
+     AutoModelForCausalLM,
+     BitsAndBytesConfig,
+ )
+-from trl import DPOTrainer
++from trl import DPOTrainer, DPOConfig
+ 
+ # Constants
+ BASE_MODEL = "/home/zhiyu/code/llm/model/Meta-Llama-3-8B"
+ DATASET_NAME = "/mnt/nasdata/yongcheng/projects/research/DPO/direct-preference-optimization/.cache/root/Anthropic___hh-rlhf"
+ OUTPUT_DIR = "./results/"
++SAVE_DIR = "./trained_model/"
+ 
+ # Load tokenizer and model
+ tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL)
+@@ -75,24 +76,27 @@ dpo_args = TrainingArguments(
+     lr_scheduler_type="cosine",
+     warmup_steps=10,
+     evaluation_strategy="steps",
++    logging_strategy="steps",
+     per_device_train_batch_size=1,
+-    per_device_eval_batch_size=1,
++    per_device_eval_batch_size=4,
+     num_train_epochs=1,
+     logging_steps=1,
+     report_to="wandb",
+     output_dir=OUTPUT_DIR,
+     remove_unused_columns=False,
++    max_length = 1024,
++    max_prompt_length = 512,
+ )
+-dpo_args.max_length = 1024
+-dpo_args.max_prompts_length = 512
++
+ 
+ # Train model
+ trainer = DPOTrainer(
+     model=model,
+     tokenizer=tokenizer,
+     args=dpo_args,
+-    train_dataset=dataset["test"],
++    train_dataset=dataset["train"],
+     eval_dataset=dataset["test"],
+     data_collator=default_data_collator,
+ )
+-trainer.train()
+\ No newline at end of file
++trainer.train()
++trainer.save_model(SAVE_DIR)
+\ No newline at end of file
