@@ -45,8 +45,6 @@ model, tokenizer = setup_chat_format(model, tokenizer)
 
 # Load dataset
 dataset = load_from_disk(DATASET_NAME)
-dataset['train'] = dataset['train'].select(range(100))
-dataset['test'] = dataset['test'].select(range(100))
 
 # Define functions
 def extract_anthropic_prompt(prompt_and_response):

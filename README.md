@@ -1,2 +1,9 @@
 # Llama DPO
-wandb login
+Build Dockerfile
+```shell
+docker build -t zhiyu/trl .
+```
+Run docker container
+```shell
+docker run -p 8022:22 --gpus all --ipc=host --ulimit memlock=-1 --ulimit stack=67108864 -v /path/to/llama3_trl/:/workspace/code -v /path/to/Meta-Llama-3-8B:/workspace/model -v /path/to/Anthropic___hh-rlhf:/workspace/data -it --rm zhiyu/trl
+```
