@@ -29,5 +29,3 @@ Once everything is set up, you can initiate the training of Llama3 with DPO:
 ```shell
 python /workspace/code/main.py
 ```
-
-These commands enable you to efficiently manage the training process of Llama3 with DPO in your environment.
