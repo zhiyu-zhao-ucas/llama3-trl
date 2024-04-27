@@ -4,9 +4,6 @@ import torch
 from datasets import load_from_disk
 from peft import LoraConfig, PeftModel, prepare_model_for_kbit_training
 from transformers import (
-    TrainingArguments,
-    Trainer,
-    default_data_collator,
     AutoTokenizer,
     AutoModelForCausalLM,
     BitsAndBytesConfig,
@@ -91,7 +88,8 @@ dpo_args = DPOConfig(
     per_device_train_batch_size=4,
     per_device_eval_batch_size=4,
     num_train_epochs=1,
-    logging_steps=1,
+    eval_steps=0.2,
+    logging_steps=0.1,
     report_to="wandb",
     output_dir=OUTPUT_DIR,
     remove_unused_columns=False,
