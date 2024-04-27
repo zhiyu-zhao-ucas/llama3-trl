@@ -1,6 +1,6 @@
 # Llama DPO Project
 
-This project focuses on training Meta-Llama-3-8B with Deterministic Policy Optimization (DPO) using the following steps:
+This project focuses on training Meta-Llama-3-8B with DPO using the following steps:
 
 ## Building Docker Image
 To build the Docker image, execute the following command:
