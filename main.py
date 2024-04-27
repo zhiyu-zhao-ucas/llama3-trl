@@ -23,7 +23,6 @@ SAVE_DIR = "./trained_model/"
 # Load tokenizer and model
 tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL)
 torch_dtype = torch.bfloat16
-attn_implementation = "flash_attention_2"
 bnb_config = BitsAndBytesConfig(
     load_in_4bit=True,
     bnb_4bit_quant_type="nf4",
@@ -35,16 +34,15 @@ model = AutoModelForCausalLM.from_pretrained(
     BASE_MODEL,
     quantization_config=bnb_config,
     device_map="auto",
-    attn_implementation=attn_implementation,
 )
-MAX_LENGTH = 1024
-MAX_PROMPT_LENGTH = 512
 
 
 model, tokenizer = setup_chat_format(model, tokenizer)
 
 # Load dataset
 dataset = load_from_disk(DATASET_NAME)
+dataset['train'] = dataset['train'].select(range(100))  
+dataset['test'] = dataset['test'].select(range(100))
 
 # Define functions
 def extract_anthropic_prompt(prompt_and_response):
