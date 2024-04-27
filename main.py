@@ -11,7 +11,7 @@ from transformers import (
     AutoModelForCausalLM,
     BitsAndBytesConfig,
 )
-from trl import DPOTrainer, DPOConfig, setup_chat_format
+from trl import DPOTrainer, DPOConfig
 
 
 # Constants
@@ -22,6 +22,7 @@ SAVE_DIR = "./trained_model/"
 
 # Load tokenizer and model
 tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL)
+tokenizer.pad_token = tokenizer.eos_token
 torch_dtype = torch.bfloat16
 bnb_config = BitsAndBytesConfig(
     load_in_4bit=True,
@@ -30,19 +31,26 @@ bnb_config = BitsAndBytesConfig(
     bnb_4bit_use_double_quant=True,
 )
 
+
+if torch.cuda.get_device_capability()[0] >= 8:
+    attn_implementation = "flash_attention_2"
+    torch_dtype = torch.bfloat16
+else:
+    attn_implementation = "eager"
+    torch_dtype = torch.float16
+
+
 model = AutoModelForCausalLM.from_pretrained(
     BASE_MODEL,
     quantization_config=bnb_config,
     device_map="auto",
+    attn_implementation=attn_implementation,
+    torch_dtype=torch_dtype,
 )
-
-
-model, tokenizer = setup_chat_format(model, tokenizer)
 
 # Load dataset
 dataset = load_from_disk(DATASET_NAME)
-dataset['train'] = dataset['train'].select(range(100))  
-dataset['test'] = dataset['test'].select(range(100))
+
 
 # Define functions
 def extract_anthropic_prompt(prompt_and_response):
